@@ -24,9 +24,9 @@ func NewGiphyClient(apiKey string, limit int) *GiphyClient {
 	return &GiphyClient{client: g, limit: limit}
 }
 
-func (g *GiphyClient) SearchGif(keyword string, number int) (Gif, error) {
-	if number > g.limit {
-		return Gif{}, errors.New("number is over limit")
+func (g *GiphyClient) SearchGif(keyword string, ranking int) (Gif, error) {
+	if ranking > g.limit {
+		return Gif{}, errors.New("ranking is over limit")
 	}
 
 	search, err := g.client.Search([]string{keyword})
@@ -38,7 +38,7 @@ func (g *GiphyClient) SearchGif(keyword string, number int) (Gif, error) {
 		return Gif{}, nil
 	}
 
-	gif := search.Data[number]
+	gif := search.Data[ranking]
 	return extractGifFromData(gif)
 }
 
@@ -55,17 +55,17 @@ func (g *GiphyClient) TranslateGif(phrase string) (Gif, error) {
 	}, nil
 }
 
-func (g *GiphyClient) TrendingGif(number int) (Gif, error) {
+func (g *GiphyClient) TrendingGif(ranking int) (Gif, error) {
 	trending, err := g.client.Trending()
 	if err != nil {
 		return Gif{}, err
 	}
 
-	if number > g.limit {
-		return Gif{}, errors.New("number is over limit")
+	if ranking > g.limit {
+		return Gif{}, errors.New("ranking is over limit")
 	}
 
-	gif := trending.Data[number]
+	gif := trending.Data[ranking]
 	return extractGifFromData(gif)
 }
 

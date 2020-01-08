@@ -12,7 +12,9 @@ Generate starter template
 `cobra init --pkg-name github.com/markuszm/go-gif-search`
 
 ## Adding new commands
+use the cobra generator add commands
 
+`cobra add <subCommand>`
 
 ## Help
 
@@ -24,7 +26,40 @@ Add text to commands and flags.
 ## Flags over args
 
 Different types of flags.
-Global vs Local.
+Global vs Local
+
+Persistent Flags
+- Available to assigned command and all commands under that command
+- for **global** flags assign flag under root command  
+
+Local Flags
+- applies only to specific command
+
+Required flags
+`rootCmd.MarkFlagRequired("<flag>")`
+
+Note that variables assigned to flags are global in package 
 
 ## Version
 
+Set version field in root command. Then Cobra adds top-level version flag automatically. 
+The template can be customized using the cmd.SetVersionTemplate(s string) function.
+
+## Mind the streams
+
+All warning/errors to Stderr
+Output to Stdout which can be used in next command
+
+use Stdin as input argument from other piped commands
+define in root command 
+
+## Handle failures
+
+Error messages should be informative
+- Error code
+- Error title
+- Error description (Optional)
+- How to fix the error
+- URL for more information
+
+Suggest commands when unknown command error occurs - activated by default in Cobra
