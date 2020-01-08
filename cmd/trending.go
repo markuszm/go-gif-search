@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -15,19 +12,17 @@ var trendingCmd = &cobra.Command{
 	Short: "Retrieves trending gifs",
 	Long: `Stores trending gifs. Uses --ranking flag to determine which gif to store based on the current Giphy trending gifs list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		initializeClients()
-
 		gif, err := giphyClient.TrendingGif(trendingRanking)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "did not find a gif for your keyword")
+			cmd.PrintErrln(  "Error: could not retrieve the gifs \n", err)
 			return
 		}
 		file, err := downloader.StoreFile(gif.Url, gif.Id)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not store gif")
+			cmd.PrintErrln(  "Error: could not store gif \n", err)
 			return
 		}
-		fmt.Fprintf(os.Stderr, "stored gif in file: %s", file)
+		cmd.PrintErrln(  "stored gif in file:", file)
 	},
 }
 

@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -13,19 +10,17 @@ var randomCmd = &cobra.Command{
 	Short: "Loads a random gif from Giphy",
 	Long: `Downloads and stores a random gif from Giphy to the folder specified with --folder flag`,
 	Run: func(cmd *cobra.Command, args []string) {
-		initializeClients()
-
 		gif, err := giphyClient.RandomGif()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not find a gif")
+			cmd.PrintErrln( "Error: could not retrieve a gif \n", err)
 			return
 		}
 		file, err := downloader.StoreFile(gif.Url, gif.Id)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not store gif")
+			cmd.PrintErrln("Error: could not store gif \n", err)
 			return
 		}
-		fmt.Fprintf(os.Stderr, "stored gif in file: %s", file)
+		cmd.PrintErrln( "stored gif in file:", file)
 	},
 }
 

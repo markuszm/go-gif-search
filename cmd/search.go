@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -17,19 +15,17 @@ var searchCmd = &cobra.Command{
 	Long: `Searches a gif on Giphy using the keyword and stores it in the folder specified with --folder flag
 	Returns first one or the one specified by --ranking flag`,
 	Run: func(cmd *cobra.Command, args []string) {
-		initializeClients()
-
 		gif, err := giphyClient.SearchGif(keyword, searchRanking)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "did not find a gif for your keyword")
+			cmd.PrintErrln( fmt.Sprintf("Error: did not find a gif for your keyword %s \n %s", keyword, err))
 			return
 		}
 		file, err := downloader.StoreFile(gif.Url, gif.Id)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not store gif")
+			cmd.PrintErrln( "Error: could not store gif \n", err)
 			return
 		}
-		fmt.Fprintf(os.Stderr, "stored gif in file: %s", file)
+		cmd.PrintErrln( "stored gif in file:", file)
 	},
 }
 

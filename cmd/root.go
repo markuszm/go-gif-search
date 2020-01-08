@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -30,32 +29,24 @@ var rootCmd = &cobra.Command{
 	Use:   "go-gif-search",
 	Short: "Search gifs based on a keyword",
 	Long: "Searches gifs based on a keyword and stores the first one to folder specified with --folder flag. Either uses first argument or piped input",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		initializeClients(cmd)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		initializeClients()
-
-		if len(args) == 1 {
-			keyword := args[0]
-			err := downloadGifForKeyword(keyword)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %s", err)
-			}
-			return
-		}
-
 		input, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
 			return
 		}
 		keyword := strings.TrimSpace(string(input))
-		err = downloadGifForKeyword(keyword)
+		err = downloadGifForKeyword(cmd, keyword)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s", err)
+			cmd.PrintErrln("Error:", err)
 		}
 	},
 	Version: "0.0.1",
 }
 
-func downloadGifForKeyword(keyword string) error {
+func downloadGifForKeyword(cmd *cobra.Command, keyword string) error {
 	gif, err := giphyClient.SearchGif(keyword, 0)
 	if err != nil {
 		return errors.Wrap(err, "error searching gif")
@@ -67,7 +58,7 @@ func downloadGifForKeyword(keyword string) error {
 	if err != nil {
 		return errors.Wrap(err, "error downloading gif")
 	}
-	fmt.Fprintf(os.Stderr, "downloaded gif to %s", filePath)
+	cmd.PrintErrln( "downloaded gif to", filePath)
 	return nil
 }
 
@@ -75,7 +66,6 @@ func downloadGifForKeyword(keyword string) error {
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr,  err)
 		os.Exit(1)
 	}
 }
@@ -94,9 +84,9 @@ func init() {
 	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf "The Cool Gif Search - %s " .}}{{end}}{{printf "Version: %s" .Version}}`)
 }
 
-func initializeClients() {
+func initializeClients(cmd *cobra.Command) {
 	if apiKey == "" {
-		fmt.Fprint(os.Stderr, "you need to specify a API Key")
+		cmd.PrintErrln("Error: missing API key \n You need to specify a API Key with the flag --apiKey")
 		os.Exit(1)
 	}
 
@@ -113,7 +103,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			rootCmd.PrintErrln(err)
 			os.Exit(1)
 		}
 
@@ -126,6 +116,7 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		rootCmd.PrintErrln( "Using config file:", viper.ConfigFileUsed())
 	}
 }
+

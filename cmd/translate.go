@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var phrase string
@@ -12,22 +11,20 @@ var phrase string
 var translateCmd = &cobra.Command{
 	Use:   "translate",
 	Short: "Translates a phrase to a gif",
-	Long: "Translates phrases to gifs using a weirdness factor." +
-		"Uses Giphy API and stores the gif in the folder specified by the --folder flag.",
+	Long: `Translates phrases to gifs using a weirdness factor.
+		Uses Giphy API and stores the gif in the folder specified by the --folder flag.`,
 	Run: func(cmd *cobra.Command, args [] string) {
-		initializeClients()
-
 		gif, err := giphyClient.TranslateGif(phrase)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "did not find a gif for your phrase")
+			cmd.PrintErrln(  fmt.Sprintf("Error: did not find a gif for your phrase: %s \n %s", phrase, err))
 			return
 		}
 		file, err := downloader.StoreFile(gif.Url, gif.Id)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not store gif")
+			cmd.PrintErrln( "Error: could not store gif \n", err)
 			return
 		}
-		fmt.Fprintf(os.Stderr, "stored gif in file: %s", file)
+		cmd.PrintErrln(  "stored gif in file:", file)
 	},
 }
 
