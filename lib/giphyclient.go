@@ -25,7 +25,7 @@ func NewGiphyClient(apiKey string, limit int) *GiphyClient {
 }
 
 func (g *GiphyClient) SearchGif(keyword string, ranking int) (Gif, error) {
-	if ranking > g.limit {
+	if ranking >= g.limit {
 		return Gif{}, errors.New("ranking is over limit")
 	}
 
@@ -39,7 +39,7 @@ func (g *GiphyClient) SearchGif(keyword string, ranking int) (Gif, error) {
 	}
 
 	gif := search.Data[ranking]
-	return extractGifFromData(gif)
+	return extractGifFromData(gif), nil
 }
 
 func (g *GiphyClient) TranslateGif(phrase string) (Gif, error) {
@@ -56,17 +56,31 @@ func (g *GiphyClient) TranslateGif(phrase string) (Gif, error) {
 }
 
 func (g *GiphyClient) TrendingGif(ranking int) (Gif, error) {
+	if ranking >= g.limit {
+		return Gif{}, errors.New("ranking is over limit")
+	}
+
 	trending, err := g.client.Trending()
 	if err != nil {
 		return Gif{}, err
 	}
 
-	if ranking > g.limit {
-		return Gif{}, errors.New("ranking is over limit")
+	gif := trending.Data[ranking]
+	return extractGifFromData(gif), nil
+}
+
+func (g *GiphyClient) TrendingGifs() ([]Gif, error) {
+	trending, err := g.client.Trending()
+	if err != nil {
+		return []Gif{}, err
 	}
 
-	gif := trending.Data[ranking]
-	return extractGifFromData(gif)
+	var gifs []Gif
+	for _, g := range trending.Data {
+		gifs = append(gifs, extractGifFromData(g))
+	}
+
+	return gifs, nil
 }
 
 func (g *GiphyClient) RandomGif() (Gif, error) {
@@ -78,16 +92,16 @@ func (g *GiphyClient) RandomGif() (Gif, error) {
 	imageData := random.Data
 	return Gif{
 		Id:   imageData.ID,
-		Name: imageData.Caption,
+		Name: imageData.URL,
 		Url:  imageData.ImageMp4URL,
 	}, nil
 }
 
-func extractGifFromData(gifData giphy.Data) (Gif, error) {
+func extractGifFromData(gifData giphy.Data) Gif {
 	img := gifData.Images.FixedHeight
 	return Gif{
 		Id:   gifData.ID,
-		Name: gifData.Title,
+		Name: gifData.URL,
 		Url:  img.Mp4,
-	}, nil
+	}
 }

@@ -75,7 +75,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-gif-search.yaml)")
 
-	rootCmd.PersistentFlags().IntVar(&limit, "limits", 20, "limit amount of gifs to retrieve")
+	rootCmd.PersistentFlags().IntVar(&limit, "limit", 20, "limit amount of gifs to retrieve")
 
 	rootCmd.PersistentFlags().StringVar(&folder, "folder", os.TempDir(), "folder to store gifs in")
 

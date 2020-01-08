@@ -63,3 +63,9 @@ Error messages should be informative
 - URL for more information
 
 Suggest commands when unknown command error occurs - activated by default in Cobra
+
+## Prompt if you can
+
+Prompting is not a feature in Cobra.
+But can use promptui https://github.com/manifoldco/promptui
+See `trending select` command
