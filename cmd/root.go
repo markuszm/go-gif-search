@@ -18,8 +18,6 @@ var giphyClient *lib.GiphyClient
 
 var downloader *lib.Downloader
 
-var apiKey string
-
 var limit int
 
 var folder string
@@ -79,14 +77,15 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&folder, "folder", os.TempDir(), "folder to store gifs in")
 
-	rootCmd.PersistentFlags().StringVar(&apiKey, "apiKey", "", "giphy api key")
+	viper.BindEnv("APIKEY")
 
 	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf "The Cool Gif Search - %s " .}}{{end}}{{printf "Version: %s" .Version}}`)
 }
 
 func initializeClients(cmd *cobra.Command) {
+	apiKey := viper.GetString("APIKEY")
 	if apiKey == "" {
-		cmd.PrintErrln("Error: missing API key \n You need to specify a API Key with the flag --apiKey")
+		cmd.PrintErrln("Error: missing API key \n You need to specify a API Key as Environment variable APIKEY")
 		os.Exit(1)
 	}
 
