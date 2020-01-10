@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/markuszm/go-gif-search/lib"
 	"github.com/spf13/cobra"
 
@@ -41,7 +42,7 @@ var selectCmd = &cobra.Command{
 			cmd.PrintErrln(  "Error: could not store gif \n", err)
 			return
 		}
-		cmd.PrintErrln(  "stored gif in file:", file)
+		fmt.Println(file)
 	},
 }
 

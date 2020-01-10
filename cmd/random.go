@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +21,7 @@ var randomCmd = &cobra.Command{
 			cmd.PrintErrln("Error: could not store gif \n", err)
 			return
 		}
-		cmd.PrintErrln( "stored gif in file:", file)
+		fmt.Println(file)
 	},
 }
 

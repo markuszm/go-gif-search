@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -22,7 +23,7 @@ var limit int
 
 var folder string
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called with	out any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "go-gif-search",
 	Short: "Search gifs based on a keyword",
@@ -56,7 +57,7 @@ func downloadGifForKeyword(cmd *cobra.Command, keyword string) error {
 	if err != nil {
 		return errors.Wrap(err, "error downloading gif")
 	}
-	cmd.PrintErrln( "downloaded gif to", filePath)
+	fmt.Println(filePath)
 	return nil
 }
 
