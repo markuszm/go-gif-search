@@ -62,10 +62,13 @@ Error messages should be informative
 - How to fix the error
 - URL for more information
 
+Show as example the error when no API key is provided
+
 Suggest commands when unknown command error occurs - activated by default in Cobra
 
 ## Prompt if you can
 
 Prompting is not a feature in Cobra.
 But can use promptui https://github.com/manifoldco/promptui
+
 See `trending select` command
